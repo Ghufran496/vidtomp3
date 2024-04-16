@@ -1,10 +1,10 @@
 "use client";
 import React, { useState } from "react";
 
-
 function extractYouTubeVideoID(url) {
   // Regular expression to match various YouTube URL formats
-  const videoIDPattern = /(?:youtube\.com\/(?:[^\/\n\s?]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([^&\s?]+)/;
+  const videoIDPattern =
+    /(?:youtube\.com\/(?:[^\/\n\s?]+\/\S+\/|(?:v|e(?:mbed)?)\/|\S*?[?&]v=)|youtu\.be\/)([^&\s?]+)/;
 
   // Match the URL against the pattern
   const match = url.match(videoIDPattern);
@@ -17,7 +17,6 @@ function extractYouTubeVideoID(url) {
   return null;
 }
 
-
 export default function Convertor() {
   const [videoId, setVideoId] = useState("");
   const [success, setSuccess] = useState(false);
@@ -27,6 +26,13 @@ export default function Convertor() {
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
+
+    // Check for empty field
+    if (videoId.trim() === "") {
+      setErrorMessage("Please enter a video link.");
+      setSuccess(false);
+      return;
+    }
 
     const extractedID = extractYouTubeVideoID(videoId);
 
@@ -48,10 +54,13 @@ export default function Convertor() {
         setSuccess(true);
         setSongTitle(data.title);
         setSongLink(data.link);
+        setErrorMessage("");
         setVideoId("");
       } else {
         setSuccess(false);
-        setErrorMessage(data.msg);
+        setErrorMessage(
+          data.msg || "An error occurred while converting the video."
+        );
       }
     } catch (error) {
       setSuccess(false);
@@ -63,14 +72,14 @@ export default function Convertor() {
     <div className="top-container">
       <form onSubmit={handleFormSubmit} id="form">
         <h1>
-          <i className="fab fa-youtube"></i> YouTube 2 MP3 Converter
+          <i className="fab fa-youtube"></i>MP3 Converter
         </h1>
-        <h4>Enter the video ID</h4>
+        <h4>Enter the video Link</h4>
         <div>
           <input
             type="text"
             name="videoId"
-            placeholder="Video ID..."
+            placeholder="Video Link..."
             value={videoId}
             onChange={(e) => setVideoId(e.target.value)}
           />

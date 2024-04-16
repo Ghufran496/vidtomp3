@@ -6,8 +6,12 @@ export default async function handler(req, res) {
 
     const { extractedID } = data;
 
-    if (extractedID === undefined || extractedID === "" || extractedID === null) {
-      res.status(401).json({ message: "Please enter a video ID" });
+    if (
+      extractedID === undefined ||
+      extractedID === "" ||
+      extractedID === null
+    ) {
+      res.status(401).json({ message: "Please enter a video Link" });
       return;
     } else {
       try {
@@ -24,7 +28,15 @@ export default async function handler(req, res) {
 
         const fetchResponse = await fetchAPI.json();
 
-        res.status(200).json(fetchResponse);
+        if (fetchAPI.ok && fetchResponse.status === "ok") {
+          res.status(200).json(fetchResponse);
+        } else {
+          res.status(fetchResponse.status).json({
+            message:
+              fetchResponse.msg ||
+              "An error occurred while fetching the video data.",
+          });
+        }
       } catch (error) {
         res.status(500).json({
           message: fetchResponse.msg,
