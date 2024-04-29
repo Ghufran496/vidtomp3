@@ -68,11 +68,53 @@ export default function Convertor() {
     }
   };
 
+  const handleVidFormSubmit = async (event) => {
+    event.preventDefault();
+
+    // Check for empty field
+    if (videoId.trim() === "") {
+      setErrorMessage("Please enter a video link.");
+      setSuccess(false);
+      return;
+    }
+
+    const extractedID = extractYouTubeVideoID(videoId);
+
+    const options = {
+      method: "GET",
+      headers: {
+        "X-RapidAPI-Key": "90ed4c336emsh496ec6538523dd2p10c774jsnf704c422c47e",
+        "X-RapidAPI-Host": "youtube-video-download-info.p.rapidapi.com",
+      },
+    };
+
+    const url = `https://youtube-video-download-info.p.rapidapi.com/dl?id=${extractedID}`;
+
+    try {
+      const response = await fetch(url, options);
+      const result = await response.json();
+
+      for (const link of Object.values(result.link)) {
+        if (link[0]) {
+          const a = document.createElement("a");
+          a.href = link[0];
+          a.download = `downloaded-video-${link[3]}.mp4`; // Set download filename based on resolution
+          a.style.display = "none";
+          document.body.appendChild(a);
+          a.click();
+          document.body.removeChild(a);
+        }
+      }
+    } catch (error) {
+      console.error(error);
+    }
+  };
+
   return (
     <div className="top-container">
       <form onSubmit={handleFormSubmit} id="form">
         <h1>
-          <i className="fab fa-youtube"></i>MP3 Converter
+          <i className="fab fa-youtube"></i>MP3/MP4 Converter
         </h1>
         <h4>Enter the video Link</h4>
         <div>
@@ -84,9 +126,23 @@ export default function Convertor() {
             onChange={(e) => setVideoId(e.target.value)}
           />
           <button type="submit" id="submit-btn">
-            Convert
+            Convert To Mp3
           </button>
         </div>
+      </form>
+
+      <form
+        onSubmit={handleVidFormSubmit}
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+        id="vidform"
+      >
+        <button type="submit" id="submitvidbtn">
+          Convert To Mp4
+        </button>
       </form>
 
       <div className="bottom-container">
