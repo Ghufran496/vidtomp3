@@ -73,7 +73,7 @@ export default function Convertor() {
 
     // Check for empty field
     if (videoId.trim() === "") {
-      setErrorMessage("Please enter a video link.");
+      setErrorMessage("Please enter a correct video link.");
       setSuccess(false);
       return;
     }
